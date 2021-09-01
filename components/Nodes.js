@@ -6,11 +6,6 @@ class Nodes {
     this.render();
   }
 
-  setState(nextState) {
-    this.state = nextState;
-    this.render();
-  }
-
   template(item) {
     if (item.type == "DIRECTORY") {
       return `
@@ -31,6 +26,7 @@ class Nodes {
   }
 
   render() {
+    console.log(this.state);
     this.targetApp.classList.add("nodes");
     this.targetApp.innerHTML = this.state
       .map((item) => this.template(item))
@@ -41,7 +37,6 @@ class Nodes {
         const targetData = this.state[index];
 
         if (targetData.type === "DIRECTORY") {
-          console.log(targetData);
           this.onClickhandler(targetData.id, targetData.name);
         }
       });

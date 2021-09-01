@@ -29,11 +29,11 @@ class App {
 
   async getNodesData(id, title) {
     const data = await getNodes(id);
-    const nextState = {
-      data: data,
-      depth: [...this.state.depth, { id: id, title: title }],
-    };
-    console.log(nextState);
+    this.test(data);
+    // const nextState = {
+    //   data: data,
+    //   depth: [...this.state.depth, { id: id, title: title }],
+    // };
     // this.setState(nextState);
   }
 
