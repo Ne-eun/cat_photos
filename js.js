@@ -1,37 +1,50 @@
 import Breadcrumb from "./components/Breadcrumb.js";
 import Nodes from "./components/Nodes.js";
-import { getRoot } from "./api.js";
+import { getRoot, getNodes } from "./api.js";
 
 class App {
   constructor($app) {
     this.app = $app;
     this.state = {
       data: [],
-      deps: [{ id: 0, title: "ROOT" }],
+      depth: [{ id: 0, title: "ROOT" }],
     };
     this.initRoot();
     this.render();
   }
 
-  async initRoot() {
-    const data = await getRoot();
-    this.setState(data, "data");
+  setState(nextState) {
+    this.state = nextState;
+    this.render();
   }
 
-  setState(nextState, type) {
-    if (type == "data") this.state.data = nextState;
-    if (type == "deps") this.state.deps = nextState;
-    this.render();
+  async initRoot() {
+    const data = await getRoot();
+    const nextState = {
+      data: data,
+      depth: [...this.state.depth],
+    };
+    this.setState(nextState);
+  }
+
+  async getNodesData(id, title) {
+    const data = await getNodes(id);
+    const nextState = {
+      data: data,
+      depth: [...this.state.depth, { id: id, title: title }],
+    };
+    console.log(nextState);
+    // this.setState(nextState);
   }
 
   render() {
     this.app.innerHTML = "";
-
+    console.log("render state", this.state);
     const breadcrumb = document.createElement("nav");
     const nodes = document.createElement("div");
 
-    new Breadcrumb(breadcrumb, this.state.deps);
-    new Nodes(nodes, this.state.data);
+    new Breadcrumb(breadcrumb, this.state.depth);
+    new Nodes(nodes, this.state.data, this.getNodesData);
 
     this.app.appendChild(breadcrumb);
     this.app.appendChild(nodes);
