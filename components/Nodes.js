@@ -1,11 +1,18 @@
+import Modal from "./Modal.js";
+
 class Nodes {
-  constructor($app, initalState, onClickhandler) {
-    this.state = initalState;
+  constructor({ $app, initialState, handler }) {
+    this.state = initialState;
     this.$app = $app;
-    this.onClickhandler = onClickhandler;
+    this.handler = handler;
 
     this.$target = document.createElement("div");
-    this.$target.classList.add("nodes");
+    this.$target.className = "nodes";
+
+    this.modal = new Modal({
+      $app: this.$app,
+      filePath: null,
+    });
 
     this.render();
   }
@@ -15,7 +22,17 @@ class Nodes {
     this.render();
   }
 
-  template(item) {
+  goBackTemplate() {
+    if (!this.state.isRoot) {
+      return `
+        <div class="Node">
+          <img src="./assets/prev.png">
+        </div>
+      `;
+    } else return "";
+  }
+
+  itemTemplate(item) {
     if (item.type == "DIRECTORY") {
       return `
         <div class="node">
@@ -35,16 +52,29 @@ class Nodes {
   }
 
   render() {
-    this.$target.innerHTML = this.state
-      .map((item) => this.template(item))
-      .join("");
+    this.$target.innerHTML =
+      this.goBackTemplate() +
+      this.state.data.map((item) => this.itemTemplate(item)).join("");
 
     this.$target.querySelectorAll(".node").forEach((item, index) => {
       item.addEventListener("click", () => {
-        const targetData = this.state[index];
+        const targetData = this.state.isRoot
+          ? this.state.data[index]
+          : this.state.data[index - 1];
+
+        //뒤로가기 버튼
+        if (targetData == undefined) {
+          return this.state.depth.length === 2
+            ? this.handler.goRoot()
+            : this.handler.goBack(this.state.data[0].parent.id);
+        }
 
         if (targetData.type === "DIRECTORY") {
-          this.onClickhandler(targetData.id, targetData.name);
+          return this.handler.goNode(targetData.id, targetData.name);
+        }
+
+        if (targetData.type === "FILE") {
+          this.modal.setState(targetData.filePath);
         }
       });
     });
