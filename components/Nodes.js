@@ -1,8 +1,17 @@
 class Nodes {
-  constructor(targetApp, initalState, onClickhandler) {
+  constructor($app, initalState, onClickhandler) {
     this.state = initalState;
-    this.targetApp = targetApp;
+    this.$app = $app;
     this.onClickhandler = onClickhandler;
+
+    this.$target = document.createElement("div");
+    this.$target.classList.add("nodes");
+
+    this.render();
+  }
+
+  setState(nextState) {
+    this.state = nextState;
     this.render();
   }
 
@@ -26,13 +35,11 @@ class Nodes {
   }
 
   render() {
-    console.log(this.state);
-    this.targetApp.classList.add("nodes");
-    this.targetApp.innerHTML = this.state
+    this.$target.innerHTML = this.state
       .map((item) => this.template(item))
       .join("");
 
-    this.targetApp.querySelectorAll(".node").forEach((item, index) => {
+    this.$target.querySelectorAll(".node").forEach((item, index) => {
       item.addEventListener("click", () => {
         const targetData = this.state[index];
 
@@ -41,6 +48,8 @@ class Nodes {
         }
       });
     });
+
+    this.$app.appendChild(this.$target);
   }
 }
 
