@@ -1,10 +1,10 @@
 class Breadcrumb {
-  constructor($app, initailState) {
+  constructor({ $app, initialState }) {
     this.$app = $app;
-    this.state = initailState;
+    this.state = initialState;
 
     this.$target = document.createElement("nav");
-    this.$target.classList.add("Breadcrumb");
+    this.$target.className = "Breadcrumb";
 
     this.render();
   }
@@ -15,10 +15,9 @@ class Breadcrumb {
   }
 
   render() {
-    this.$target.innerHTML = this.state.map(
-      (item) => `<div>${item.title}</div>`
-    );
-
+    this.$target.innerHTML = this.state.depth
+      .map((item) => `<div>${item.title}</div>`)
+      .join("");
     this.$app.appendChild(this.$target);
   }
 }
